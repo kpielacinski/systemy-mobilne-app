@@ -1,3 +1,8 @@
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { View, Button, Text, StyleSheet } from "react-native";
@@ -10,17 +15,14 @@ import {
 } from "../utils/database";
 import { fetchMovies } from "../utils/http";
 
-interface Props {
-  route: any;
-}
-
-export default function MoviesByGenreScreen({ route }: Props) {
+export default function MoviesByGenreScreen({ route, navigation }: any) {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const genre = route.params.genre;
+  const genre = route.params?.genre ?? "";
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     handleFetchMoviesFromDb();
-  }, []);
+  }, [isFocused]);
 
   async function handleFetchMovies() {
     const movies = await fetchMovies();
@@ -32,28 +34,15 @@ export default function MoviesByGenreScreen({ route }: Props) {
   }
 
   async function handleFetchMoviesFromDb() {
-    const movies = await fetchMoviesFromDb();
+    const movies = await fetchMoviesFromDb(genre);
     setMovies(movies);
   }
 
   if (movies.length > 0) {
     return (
       <View style={styles.container}>
-        <Text>{genre}</Text>
+        <Text style={styles.text}>{genre}</Text>
         <MovieList movies={movies} />
-        <Button title="Delete movies" onPress={() => setMovies([])} />
-        <Button
-          title="Add movies to DB"
-          onPress={() => handleAddMoviesToDb()}
-        />
-        <Button
-          title="Load movies from DB"
-          onPress={() => handleFetchMoviesFromDb()}
-        />
-        <Button
-          title="Load movies from API"
-          onPress={() => handleFetchMovies()}
-        />
       </View>
     );
   }
@@ -70,10 +59,13 @@ export default function MoviesByGenreScreen({ route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 24,
     paddingHorizontal: 6,
+  },
+  text: {
+    fontWeight: "bold",
+    fontSize: 24,
   },
 });

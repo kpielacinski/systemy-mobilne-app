@@ -10,42 +10,32 @@ import {
 } from "../utils/database";
 import { fetchMovies } from "../utils/http";
 
-interface Props {
-  route: any;
-}
-
-export default function MoviesScreen() {
+export default function ConfigScreen() {
   const [movies, setMovies] = useState<Movie[]>([]);
-
-  useEffect(() => {
-    handleFetchMoviesFromDb();
-  }, []);
-
-  async function handleFetchMoviesFromDb() {
-    const movies = await fetchMoviesFromDb();
-    setMovies(movies);
-  }
 
   async function handleFetchMovies() {
     const movies = await fetchMovies();
     setMovies(movies);
   }
 
-  if (movies.length > 0) {
-    return (
-      <View style={styles.container}>
-        <MovieList movies={movies} />
-      </View>
-    );
+  async function handleAddMoviesToDb() {
+    await insertMovies(movies);
   }
 
-  return (
-    <View style={styles.container}>
-      <Text>Hi iOS</Text>
-      <Button title="Fetch Movies" onPress={() => handleFetchMovies()} />
-      <StatusBar style="auto" />
-    </View>
-  );
+  async function handleFetchMoviesFromDb() {
+    const movies = await fetchMoviesFromDb();
+    setMovies(movies);
+  }
+
+  <View style={styles.container}>
+    <Button title="Delete movies" onPress={() => setMovies([])} />
+    <Button title="Add movies to DB" onPress={() => handleAddMoviesToDb()} />
+    <Button
+      title="Load movies from DB"
+      onPress={() => handleFetchMoviesFromDb()}
+    />
+    <Button title="Load movies from API" onPress={() => handleFetchMovies()} />
+  </View>;
 }
 
 const styles = StyleSheet.create({

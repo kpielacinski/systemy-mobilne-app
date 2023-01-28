@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { Text, View, StyleSheet, FlatList } from "react-native";
 import { Movie } from "../models/movie";
 import { MovieItem } from "./MovieItem";
@@ -7,6 +8,12 @@ interface Props {
 }
 
 export const MovieList = ({ movies }: Props) => {
+  const navigation = useNavigation();
+
+  function onPressHandler(movie: Movie) {
+    navigation.navigate("MovieDetails" as never, { movie: movie } as never);
+  }
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -14,7 +21,10 @@ export const MovieList = ({ movies }: Props) => {
         renderItem={(itemData) => {
           return (
             <View style={styles.flatListItem}>
-              <MovieItem movie={itemData.item} />
+              <MovieItem
+                movie={itemData.item}
+                onPress={() => onPressHandler(itemData.item)}
+              />
             </View>
           );
         }}

@@ -88,8 +88,10 @@ export function insertMovies(movies: Movie[]) {
   return promise;
 }
 
-export function fetchMoviesFromDb() {
-  const query = `SELECT * FROM ${tableName}`;
+export function fetchMoviesFromDb(genre?: string = null) {
+  let query = `SELECT * FROM ${tableName}`;
+  genre && (query += ` WHERE ${dbHelper.COLUMN_GENRE.name} LIKE '%${genre}%'`);
+  query += ` ORDER BY ${dbHelper.COLUMN_RATING.name} DESC`;
   const promise = new Promise<any>((resolve, reject) => {
     database.transaction((tx) => {
       tx.executeSql(

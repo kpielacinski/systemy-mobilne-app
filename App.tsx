@@ -17,6 +17,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import "react-native-gesture-handler";
 import MoviesScreen from "./screens/MoviesScreen";
 import MoviesByGenreScreen from "./screens/MoviesByGenreScreen";
+import MovieDetailsScreen from "./screens/MovieDetailsScreen";
+import Toast from "react-native-toast-message";
 
 export default function App() {
   const [dbInitialized, setDbInitialized] = useState(false);
@@ -45,8 +47,20 @@ export default function App() {
           <Stack.Screen name="Genres" component={GenresScreen} />
           <Stack.Screen name="Movies" component={MoviesScreen} />
           <Stack.Screen name="MoviesByGenre" component={MoviesByGenreScreen} />
+          <Stack.Screen name="MovieDetails" component={MovieDetailsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
+      <Toast />
     </>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 24,
+    paddingHorizontal: 6,
+  },
+});
