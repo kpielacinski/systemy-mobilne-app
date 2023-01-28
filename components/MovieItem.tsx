@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
 import { Movie } from "../models/movie";
 
 interface Props {
@@ -7,8 +7,17 @@ interface Props {
 
 export const MovieItem = ({ movie }: Props) => {
   return (
-    <View>
-      <Text>{movie.title}</Text>
+    <View style={styles.container}>
+      <Image
+        source={{ uri: movie.image }}
+        style={{ width: 100, height: 100, resizeMode: "contain" }}
+      />
+      <View style={styles.wrapper}>
+        <Text>{movie.title}</Text>
+        <Text>{movie.rating}</Text>
+        <Text>{movie.year}</Text>
+        <Text>{movie.genre.toString()}</Text>
+      </View>
     </View>
   );
 };
@@ -16,10 +25,18 @@ export const MovieItem = ({ movie }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    display: "flex",
+    flexDirection: "row",
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 24,
-    paddingHorizontal: 6,
+    justifyContent: "flex-start",
+  },
+  wrapper: {
+    display: "flex",
+    width: "100%",
+    flexDirection: "column",
+    backgroundColor: "#fff",
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
   },
 });

@@ -1,4 +1,4 @@
-import { Movie } from "./../models/Movie";
+import { Movie } from "../models/movie";
 import axios from "axios";
 
 const BACKEND_URL =

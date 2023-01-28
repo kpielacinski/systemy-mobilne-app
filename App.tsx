@@ -1,43 +1,52 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
+import AppLoading from "./components/AppLoading";
 import { MovieList } from "./components/MovieList";
-import { Movie } from "./models/Movie";
+import { Movie } from "./models/movie";
+import GenresScreen from "./screens/GenresScreen";
+import {
+  fetchGenres,
+  fetchMoviesFromDb,
+  init,
+  insertMovies,
+} from "./utils/database";
 import { fetchMovies } from "./utils/http";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import "react-native-gesture-handler";
+import MoviesScreen from "./screens/MoviesScreen";
+import MoviesByGenreScreen from "./screens/MoviesByGenreScreen";
 
 export default function App() {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [dbInitialized, setDbInitialized] = useState(false);
 
-  async function handleFetchMovies() {
-    const movies = await fetchMovies();
-    setMovies(movies);
+  useEffect(() => {
+    init()
+      .then(() => {
+        setDbInitialized(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  if (!dbInitialized) {
+    return <AppLoading />;
   }
 
-  if (movies.length > 0) {
-    return (
-      <View style={styles.container}>
-        <MovieList movies={movies} />
-        <Button title="Delete movies" onPress={() => setMovies([])} />
-      </View>
-    );
-  }
+  const Stack = createStackNavigator();
 
   return (
-    <View style={styles.container}>
-      <Text>Hi iOS</Text>
-      <Button title="Fetch Movies" onPress={() => handleFetchMovies()} />
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <StatusBar style="dark" />
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Genres" component={GenresScreen} />
+          <Stack.Screen name="Movies" component={MoviesScreen} />
+          <Stack.Screen name="MoviesByGenre" component={MoviesByGenreScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 24,
-    paddingHorizontal: 6,
-  },
-});

@@ -8,11 +8,15 @@ interface Props {
 
 export const MovieList = ({ movies }: Props) => {
   return (
-    <View style={styles.moviesContainer}>
+    <View style={styles.container}>
       <FlatList
         data={movies}
         renderItem={(itemData) => {
-          return <MovieItem movie={itemData.item} />;
+          return (
+            <View style={styles.flatListItem}>
+              <MovieItem movie={itemData.item} />
+            </View>
+          );
         }}
       />
     </View>
@@ -20,10 +24,15 @@ export const MovieList = ({ movies }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  moviesContainer: {
-    padding: 24,
+  container: {
     flex: 1,
     flexDirection: "column",
-    gap: 12,
+    paddingVertical: 24,
+    paddingHorizontal: 12,
+  },
+  flatListItem: {
+    flex: 1,
+    flexDirection: "column",
+    paddingVertical: 6,
   },
 });
