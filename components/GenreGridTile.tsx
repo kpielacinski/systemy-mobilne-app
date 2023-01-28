@@ -1,5 +1,4 @@
-import { Pressable, View, Text, StyleSheet, Platform } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 const generateColor = () => {
   const randomColor = Math.floor(Math.random() * 16777215)
@@ -13,8 +12,6 @@ interface Props {
   onPress: () => void;
 }
 export default function GenreGridTile({ genre, onPress }: Props) {
-  const navigation = useNavigation();
-  
   return (
     <View style={[styles.gridItem, { backgroundColor: generateColor() }]}>
       <Pressable

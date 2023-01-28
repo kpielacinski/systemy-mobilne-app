@@ -88,6 +88,56 @@ export function insertMovies(movies: Movie[]) {
   return promise;
 }
 
+export function deleteMovie(id: string) {
+  const query = `DELETE FROM ${tableName} WHERE ${dbHelper.COLUMN_ID.name} = '${id}'`;
+
+  const promise = new Promise<void>((resolve, reject) => {
+    database.transaction((tx) => {
+      tx.executeSql(
+        query,
+        [],
+        (_, result) => {
+          resolve();
+        },
+        (_, erorr) => {
+          reject(error);
+        }
+      );
+    });
+  });
+  return promise;
+}
+
+export function fetchRandomMovie() {
+  let query = `SELECT * FROM ${tableName}  ORDER BY RANDOM() LIMIT 1`;
+
+  const promise = new Promise<Movie>((resolve, reject) => {
+    database.transaction((tx) => {
+      tx.executeSql(
+        query,
+        [],
+        (_, result) => {
+          const dp = result.rows._array[0];
+          const movie = new Movie(
+            dp.id,
+            dp.title,
+            dp.rating,
+            dp.year,
+            dp.image,
+            dp.genre
+          );
+          resolve(movie);
+        },
+        (_, erorr) => {
+          console.log(erorr);
+          reject(error);
+        }
+      );
+    });
+  });
+  return promise;
+}
+
 export function fetchMoviesFromDb(genre?: string = null) {
   let query = `SELECT * FROM ${tableName}`;
   genre && (query += ` WHERE ${dbHelper.COLUMN_GENRE.name} LIKE '%${genre}%'`);
@@ -134,15 +184,12 @@ export function fetchGenres() {
               genresArr.push(dp.genre);
             }
             for (let i = 0; i < genresArr.length; i++) {
-              console.log("dupa");
               if (!genres.includes(genresArr[i])) {
                 genres.push(genresArr[i]);
               }
             }
           }
           genres.sort();
-
-          console.log(genres);
           resolve(genres);
         },
         (_, erorr) => {

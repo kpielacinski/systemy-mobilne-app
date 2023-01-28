@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import {
   View,
@@ -12,7 +13,7 @@ import {
 import Toast from "react-native-toast-message";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { Movie } from "../models/movie";
-import { insertMovies } from "../utils/database";
+import { deleteMovie, insertMovies } from "../utils/database";
 
 interface Props {
   movie: Movie;
@@ -22,7 +23,7 @@ export default function MovieDetails({ movie }: Props) {
   const [title, setTitle] = useState(movie.title);
   const [year, setYear] = useState(movie.year.toString());
   const [rating, setRating] = useState(movie.rating.toFixed(1));
-
+  const navigation = useNavigation();
   async function onUpdateHandler() {
     const updatedMovie: Movie = {
       ...movie,
@@ -33,6 +34,18 @@ export default function MovieDetails({ movie }: Props) {
     await insertMovies([updatedMovie])
       .then(() => {
         Toast.show({ type: "success", text1: "Updated!" });
+      })
+      .catch((error) => {
+        Toast.show({ type: "error", text1: "Error", text2: error });
+      });
+  }
+
+  async function onDeleteHandler() {
+    const id = movie.id;
+    await deleteMovie(id)
+      .then(() => {
+        Toast.show({ type: "success", text1: "Movie deleted!" });
+        navigation.goBack();
       })
       .catch((error) => {
         Toast.show({ type: "error", text1: "Error", text2: error });
@@ -55,7 +68,6 @@ export default function MovieDetails({ movie }: Props) {
             flex: 1,
             alignItems: "center",
             justifyContent: "center",
-            paddingTop: 12,
           }}
         >
           <Image
@@ -74,23 +86,32 @@ export default function MovieDetails({ movie }: Props) {
               style={styles.text}
               onChangeText={(e) => setTitle(e)}
             />
-            <TextInput
-              value={year.toString()}
-              keyboardType="numeric"
-              onChangeText={(e) => setYear(e)}
-            />
-            <TextInput
-              value={rating.toString()}
-              keyboardType="numeric"
-              onChangeText={(e) => {
-                if (/^[\d]*\.?[\d]{0,2}$/.test(e)) {
-                  setRating(e);
-                }
+            <View style={styles.wrapper}>
+              <TextInput
+                style={styles.year}
+                value={year.toString()}
+                keyboardType="numeric"
+                onChangeText={(e) => setYear(e)}
+              />
+              <TextInput
+                style={styles.rating}
+                value={rating.toString()}
+                keyboardType="numeric"
+                onChangeText={(e) => {
+                  if (/^[\d]*(\.|\,)?[\d]{0,2}$/.test(e)) {
+                    setRating(e);
+                  }
+                }}
+              />
+            </View>
+            <View
+              style={{
+                justifyContent: "space-around",
+                width: 200,
               }}
-            />
-            <View style={{ justifyContent: "space-around", width: 200 }}>
+            >
               <Button title="Update" onPress={onUpdateHandler} />
-              <Button title="Delete" color={"red"} />
+              <Button title="Delete" onPress={onDeleteHandler} color={"red"} />
             </View>
           </View>
         </View>
@@ -109,7 +130,6 @@ const styles = StyleSheet.create({
     heigh: "100%",
   },
   text: {
-    marginTop: 12,
     fontWeight: "bold",
     fontSize: 18,
   },
@@ -121,7 +141,7 @@ const styles = StyleSheet.create({
   mainCardView: {
     marginTop: -120,
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     backgroundColor: Colors.white,
     borderRadius: 15,
     shadowColor: Colors.shadow,
@@ -129,15 +149,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 8,
     elevation: 8,
+    padding: 16,
     flexDirection: "column",
-    paddingLeft: 16,
-    paddingRight: 14,
-    marginBottom: 6,
-    marginLeft: 16,
-    marginRight: 16,
-    paddingBottom: 16,
-    flexShrink: 1,
     maxWidth: "60%",
     flexWrap: "wrap",
   },
+  wrapper: {
+    width: 200,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+  },
+  year: {},
+  rating: { fontWeight: "bold", fontSize: 30, color: "green" },
 });
